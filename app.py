@@ -1,34 +1,29 @@
-from flask import Flask, request
+from flask import Flask, request, send_file
+import io
 
 app = Flask(__name__)
 
-# Itt tároljuk a parancsot és a választ
-tarolo = {"parancs": "", "valasz": ""}
+# Itt tároljuk ideiglenesen a legfrissebb képet a memóriában
+latest_image = None
 
+@app.route('/upload', methods=['POST'])
+def upload():
+    global latest_image
+    file = request.files.get('image')
+    if file:
+        latest_image = file.read()
+        return "OK", 200
+    return "No image", 400
 
-@app.route("/kuld", methods=["POST"])
-def parancsot_fogad():
-  adat = request.json
-  tarolo["parancs"] = adat.get("parancs", "")
-  return "OK"
+@app.route('/image', methods=['GET'])
+def get_image():
+    global latest_image
+    if latest_image:
+        return send_file(
+            io.BytesIO(latest_image),
+            mimetype='image/jpeg'
+        )
+    return "No image available", 404
 
-
-@app.route("/leker", methods=["GET"])
-def parancsot_keres():
-  return tarolo["parancs"]
-
-
-@app.route("/valasz", methods=["POST"])
-def valaszt_fogad():
-  adat = request.json
-  tarolo["valasz"] = adat.get("valasz", "")
-  return "OK"
-
-
-@app.route("/eredmeny", methods=["GET"])
-def valaszt_keres():
-  return tarolo["valasz"]
-
-
-if __name__ == "__main__":
-  app.run(host="0.0.0.0", port=10000)
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)

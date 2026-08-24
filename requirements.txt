@@ -2,3 +2,7 @@ flask
 flask-sock
 websocket-client
 simple-websocket
+gunicorn
+uvicorn
+websockets
+zeroconf

